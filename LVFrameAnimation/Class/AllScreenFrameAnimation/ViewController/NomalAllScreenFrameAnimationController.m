@@ -15,6 +15,8 @@
 
 @implementation NomalAllScreenFrameAnimationController
 
+#pragma mark - LifeCycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view addSubview:self.giftAnimationImageView];
@@ -26,23 +28,7 @@
     _giftAnimationImageView.animationImages = nil;
 }
 
-#pragma mark -
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    [_giftAnimationImageView stopAnimating];
-    NSMutableArray *animationsArr = [NSMutableArray array];
-    @autoreleasepool{
-        for (int i = 1; i <= 96; i ++) {
-            UIImage * tempArray = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"image_%d.png",i] ofType:nil]];
-            if (!tempArray) continue;
-            [animationsArr addObject:tempArray];
-        }
-    }
-    _giftAnimationImageView.animationImages = animationsArr;
-    [_giftAnimationImageView startAnimating];
-}
-
-#pragma mark - Getter
+#pragma mark - Custom Accessors
 
 - (UIImageView *)giftAnimationImageView {
     if (!_giftAnimationImageView) {
@@ -51,6 +37,22 @@
         _giftAnimationImageView.userInteractionEnabled = NO;
     }
     return _giftAnimationImageView;
+}
+
+#pragma mark - UIEvents
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [_giftAnimationImageView stopAnimating];
+    NSMutableArray *animationsArr = [NSMutableArray array];
+    @autoreleasepool{
+        for (int i = 1; i <= 96; i ++) {
+            UIImage * tempImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"image_%d.png",i] ofType:nil]];
+            if (!tempImg) continue;
+            [animationsArr addObject:tempImg];
+        }
+    }
+    _giftAnimationImageView.animationImages = animationsArr;
+    [_giftAnimationImageView startAnimating];
 }
 
 @end

@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface MTFrameAnimationCacheManager : NSObject
+@interface MTFrameAnimationCacheManager: NSObject
+
++ (instancetype)shareManager;
+
+- (UIImage *)getKeyFrameDataRef:(NSURL *)url key:(NSString *)key;
 
 @end
