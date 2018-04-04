@@ -14,12 +14,12 @@ static const char *dbPath = "";
 
 static NSString *createCacheListTable = @"create table if not exists prefixcache_table(id integer primary key autoincrement, prefixname text, result integer)";
 static NSString *updateCacheListTable = @"update prefixcache_table set result = ? WHERE prefixname = '%@'";
-static NSString *queryCacheListTable = @"select * form prefixcache_table WHERE prefixname = '%@' COLLATE NOCASE";
+static NSString *queryCacheListTable = @"select * from prefixcache_table WHERE prefixname = '%@'";
 static NSString *insertCacheListTable = @"insert into prefixcache_table(prefixname, result) values(?, ?)";
 
 static NSString *createCacheTable = @"create table if not exists %@_table(id integer primary key autoincrement, content BLOB)";
 static NSString *insertCacheTable = @"insert into %@_table(content) values(?)";
-static NSString *queryCacheTable = @"select * from %@_table COLLATE NOCASE";
+static NSString *queryCacheTable = @"select * from %@_table";
 
 @interface MTFrameAnimationDataBase() {
     sqlite3 *db;
@@ -34,6 +34,10 @@ static NSString *queryCacheTable = @"select * from %@_table COLLATE NOCASE";
     if (self = [super init]) {
         NSString *localPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"]
                              stringByAppendingPathComponent:@"com.mp.frameAnimation"];
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:localPath withIntermediateDirectories:YES
+                                                   attributes:nil error:nil];
+        
         dbPath = [[localPath stringByAppendingPathComponent:@"framebytes.db"] UTF8String];
         sqlite3_open(dbPath, &db);
         sqlite3_exec(db, [createCacheListTable UTF8String], NULL, NULL, nil);
@@ -53,8 +57,11 @@ static NSString *queryCacheTable = @"select * from %@_table COLLATE NOCASE";
         const char * querySql = [[NSString stringWithFormat:queryCacheTable, prefixName] UTF8String];
         if (sqlite3_prepare_v2(db, querySql, -1, &stmt, NULL) == SQLITE_OK) {
             while (sqlite3_step(stmt) == SQLITE_ROW) {
-                //TODO:处理二进制成图片
-                //TODO:添加到数据库中
+                const void *bytes = sqlite3_column_blob(stmt, 1);
+                int size = sqlite3_column_bytes(stmt, 1);
+                NSData *data = [NSData dataWithBytes:bytes length:size];
+                UIImage *img = [UIImage imageWithData:data];
+                [resourceArr addObject:img];
             }
         }
     }
@@ -74,10 +81,17 @@ static NSString *queryCacheTable = @"select * from %@_table COLLATE NOCASE";
         const char *insertSql = [[NSString stringWithFormat:insertCacheTable, prefixName] UTF8String];
         sqlite3_reset(stmt);
         sqlite3_prepare_v2(db, insertSql, -1, &stmt, NULL);
+        
         [sources enumerateObjectsUsingBlock:^(MTFrameAnimationImage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             @autoreleasepool{
-                //TODO:转换成二进制，存入数据库中
-                sqlite3_bind_blob(stmt, 1, NULL, -1, NULL);
+                NSData * tempData = UIImagePNGRepresentation(obj);
+                sqlite3_reset(stmt);
+                sqlite3_bind_blob(stmt, 1, [tempData bytes], (int)[tempData length], NULL);
+                if (sqlite3_step(stmt) != SQLITE_DONE) {
+                    NSLog(@"Insert bytes failed!");
+                }else {
+                    NSLog(@"Insert bytes success ~~");
+                }
             }
         }];
         pv_updateIsLoadCacheResultWithPrefix(db, stmt, prefixName, 1);
@@ -104,10 +118,30 @@ static BOOL pv_isLoadCacheResultWithPrefix(NSString *prefixName, sqlite3 *db, sq
 
 static void pv_updateIsLoadCacheResultWithPrefix(sqlite3 *db, sqlite3_stmt *stmt, NSString *prefixName, int result) {
     sqlite3_reset(stmt);
-    const char *updateSql = [[NSString stringWithFormat:updateCacheListTable, result, prefixName] UTF8String];
-    int rt = sqlite3_prepare_v2(db, updateSql, -1, &stmt, NULL);
-    if (rt != SQLITE_OK) {
-        NSLog(@"update cacheList status failed!");
+    BOOL find = NO;
+    const char *querySqlString = [[NSString stringWithFormat:queryCacheListTable, prefixName] UTF8String];
+    if (sqlite3_prepare_v2(db, querySqlString, -1, &stmt, NULL) == SQLITE_OK) {
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            find = YES;
+            break;
+        }
+    }
+    if (find) {
+        const char *updateSql = [[NSString stringWithFormat:updateCacheListTable, result, prefixName] UTF8String];
+        int rt = sqlite3_prepare_v2(db, updateSql, -1, &stmt, NULL);
+        if (rt != SQLITE_OK) {
+            NSLog(@"update cacheList status failed!");
+        }
+    }else {
+        const char *insertSql = [insertCacheListTable UTF8String];
+        sqlite3_prepare_v2(db, insertSql, -1, &stmt, NULL);
+        
+        sqlite3_bind_text(stmt, 1, [prefixName UTF8String], -1, NULL);
+        sqlite3_bind_int(stmt, 2, result);
+        
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            NSLog(@"insert cacheList status failed!");
+        }
     }
 }
 

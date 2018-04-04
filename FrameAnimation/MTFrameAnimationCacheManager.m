@@ -7,9 +7,11 @@
 //
 
 #import "MTFrameAnimationCacheManager.h"
+#import "MTFrameAnimationDataBase.h"
 
 @interface MTFrameAnimationCacheManager()
 @property (nonatomic, strong) NSCache *cache;
+@property (nonatomic, strong) MTFrameAnimationDataBase *dataBase;
 @end
 
 @implementation MTFrameAnimationCacheManager
@@ -31,7 +33,7 @@
         _cache.name = @"com.meipai.MTFrameAnimationCacheManager.cache";
         _cache.countLimit = 0;
         
-        
+        _dataBase = [[MTFrameAnimationDataBase alloc] init];
     }
     return self;
 }
@@ -40,6 +42,9 @@
 
 - (NSArray<MTFrameAnimationImage *> *)getAnimationsWithPrefixName:(NSString *)prefixName
                                                        totalCount:(NSUInteger)totalCount {
+    NSArray * result = [_dataBase db_getSourcesWithPrefixName:prefixName];
+    if (result) return result;
+    
     NSMutableArray<MTFrameAnimationImage *> *animationArr = [NSMutableArray array];
     @autoreleasepool{
         for (int i = 1; i <= totalCount; i ++) {
@@ -51,6 +56,7 @@
             [animationArr addObject:tempImage];
         }
     }
+    [_dataBase db_insertSourcesWithPrefixName:prefixName sources:animationArr];
     return animationArr;
 }
 
