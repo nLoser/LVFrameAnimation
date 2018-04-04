@@ -43,18 +43,7 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [_giftAnimationImageView stopAnimating];
-    NSMutableArray *animationArr = [NSMutableArray array];
-    @autoreleasepool{
-        for (int i = 1; i <= 96; i ++) {
-            NSString *imageName = [NSString stringWithFormat:@"image_%d.png",i];
-            NSString *imageFilePath = [[NSBundle mainBundle] pathForResource:imageName ofType:nil];
-            NSURL *imageFileURL = [NSURL fileURLWithPath:imageFilePath];
-            UIImage *tempImage = [_frameAnimationCache getKeyFrameDataRef:imageFileURL key:imageName];
-            if(!tempImage) continue;
-            [animationArr addObject:tempImage];
-        }
-    }
-    _giftAnimationImageView.animationImages = animationArr;
+    _giftAnimationImageView.animationImages = [_frameAnimationCache getAnimationsWithPrefixName:@"image" totalCount:96];
     [_giftAnimationImageView startAnimating];
 }
 

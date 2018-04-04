@@ -9,10 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "MTFrameAnimationImage.h"
+
 @interface MTFrameAnimationCacheManager: NSObject
 
 + (instancetype)shareManager;
 
-- (UIImage *)getKeyFrameDataRef:(NSURL *)url key:(NSString *)key;
+- (NSArray<MTFrameAnimationImage *> *)getAnimationsWithPrefixName:(NSString *)prefixName
+                                                       totalCount:(NSUInteger)totalCount;
 
 @end

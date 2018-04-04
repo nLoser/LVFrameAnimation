@@ -8,7 +8,7 @@
 
 #import "MTFrameAnimationCacheManager.h"
 
-@interface MTFrameAnimationCacheManager()<NSCacheDelegate>
+@interface MTFrameAnimationCacheManager()
 @property (nonatomic, strong) NSCache *cache;
 @end
 
@@ -29,23 +29,41 @@
     if (self = [super init]) {
         _cache = [[NSCache alloc] init];
         _cache.name = @"com.meipai.MTFrameAnimationCacheManager.cache";
-        _cache.delegate = self;
+        _cache.countLimit = 0;
+        
+        
     }
     return self;
 }
 
 #pragma mark - Public
 
-- (UIImage *)getKeyFrameDataRef:(NSURL *)url key:(NSString *)key {
+- (NSArray<MTFrameAnimationImage *> *)getAnimationsWithPrefixName:(NSString *)prefixName
+                                                       totalCount:(NSUInteger)totalCount {
+    NSMutableArray<MTFrameAnimationImage *> *animationArr = [NSMutableArray array];
+    @autoreleasepool{
+        for (int i = 1; i <= totalCount; i ++) {
+            NSString *imageName = [NSString stringWithFormat:@"%@_%d.png",prefixName,i];
+            NSString *imageFilePath = [[NSBundle mainBundle] pathForResource:imageName ofType:nil];
+            NSURL *imageFileURL = [NSURL fileURLWithPath:imageFilePath];
+            MTFrameAnimationImage *tempImage = [self getKeyFrameDataRef:imageFileURL key:imageName];
+            if(!tempImage) continue;
+            [animationArr addObject:tempImage];
+        }
+    }
+    return animationArr;
+}
+
+- (MTFrameAnimationImage *)getKeyFrameDataRef:(NSURL *)url key:(NSString *)key {
     if(!url) return nil;
-    UIImage * data = [self cacheObjectForkey:key];
+    MTFrameAnimationImage * data = [self cacheObjectForkey:key];
     if (!data) {
         NSDictionary * imageOptions = @{(__bridge id)kCGImageSourceShouldCache:@YES,
                                         (__bridge id)kCGImageSourceShouldCacheImmediately:@YES};
         CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
         if(!sourceRef) return nil;
         CGImageRef imageRef = CGImageSourceCreateImageAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)imageOptions);
-        data = [UIImage imageWithCGImage:imageRef];
+        data = (MTFrameAnimationImage *)[UIImage imageWithCGImage:imageRef];
         [self cacheObject:data forkey:key];
         CFRelease(imageRef);
     }
@@ -60,12 +78,6 @@
 
 - (void)cacheObject:(id)obj forkey:(NSString *)key {
     [_cache setObject:obj forKey:key];
-}
-
-#pragma mark - NSCacheDelegate
-
-- (void)cache:(NSCache *)cache willEvictObject:(id)obj {
-    NSLog(@"%@",obj);
 }
 
 @end
