@@ -19,7 +19,7 @@
 @end
 @implementation MTFactoryClassObject
 + (instancetype)createObjectWithName:(NSString *)title object:(id)object {
-    MTFactoryClassObject * obj = [MTFactoryClassObject new];
+    MTFactoryClassObject *obj = [MTFactoryClassObject new];
     obj.title = title;
     obj.obj = object;
     return obj;

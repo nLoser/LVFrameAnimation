@@ -85,7 +85,7 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
             while (sqlite3_step(stmt) == SQLITE_OK) {
                 const void *bytes = sqlite3_column_blob(stmt, 1);
                 int size = sqlite3_column_bytes(stmt, 1);
-                NSData * data = [NSData dataWithBytes:bytes length:size];
+                NSData *data = [NSData dataWithBytes:bytes length:size];
                 MTFrameAnimationImage *img = (MTFrameAnimationImage *)[UIImage imageWithData:data];
                 return img;
             }
@@ -108,7 +108,7 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
         sqlite3_reset(stmt);
         sqlite3_prepare_v2(db, insertSql, -1, &stmt, NULL);
         
-        [sources enumerateObjectsUsingBlock:^(MTFrameAnimationImage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [sources enumerateObjectsUsingBlock:^(MTFrameAnimationImage *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
             @autoreleasepool{
                 NSData *tempData = UIImagePNGRepresentation(obj);
                 sqlite3_reset(stmt);
@@ -135,8 +135,8 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
     const char *querySql = [queryCacheListAllTable UTF8String];
     if (sqlite3_prepare_v2(db, querySql, -1, &stmt, NULL) == SQLITE_OK) {
         while (sqlite3_step(stmt) == SQLITE_OK) {
-            NSString * cacheName = [NSString stringWithUTF8String:(char *)sqlite3_column_text(stmt, 1)];
-            NSNumber * result = [NSNumber numberWithInt:sqlite3_column_int(stmt, 2)];
+            NSString *cacheName = [NSString stringWithUTF8String:(char *)sqlite3_column_text(stmt, 1)];
+            NSNumber *result = [NSNumber numberWithInt:sqlite3_column_int(stmt, 2)];
             [cacheListResultDict setValue:result forKey:cacheName];
         }
     }

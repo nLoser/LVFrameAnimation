@@ -46,7 +46,7 @@
     NSMutableArray *animationsArr = [NSMutableArray array];
     @autoreleasepool{
         for (int i = 1; i <= 96; i ++) {
-            UIImage * tempImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"image_%d.png",i] ofType:nil]];
+            UIImage *tempImg = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"image_%d.png",i] ofType:nil]];
             if (!tempImg) continue;
             [animationsArr addObject:tempImg];
         }

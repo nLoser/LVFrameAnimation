@@ -24,7 +24,7 @@
 #pragma mark - LifeCycle
 
 + (instancetype)shareManager {
-    static MTFrameAnimationCacheManager * manager = nil;
+    static MTFrameAnimationCacheManager *manager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[MTFrameAnimationCacheManager alloc] initWithDomain:@"defaultCache"];
@@ -61,13 +61,13 @@
             NSArray *dbResources = [_dataBase db_getSourcesWithPrefixName:prefixName];
             if (dbResources) {
                 [animationArr addObjectsFromArray:dbResources];
-                [dbResources enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [dbResources enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
                     [self cacheObject:obj forkey:[NSString stringWithFormat:@"%@_%d",prefixName, (int)idx+1]];
                 }];
             }
             [_localCacheResult setValue:@(1) forKey:prefixName];
         }else {
-            __block NSMutableDictionary * sortSources = [NSMutableDictionary dictionaryWithCapacity:totalCount];
+            __block NSMutableDictionary *sortSources = [NSMutableDictionary dictionaryWithCapacity:totalCount];
             for (int i = 1; i <= totalCount; i ++) {
                 __weak typeof(self) weakSelf = self;
                 __block MTFrameAnimationImage *tempImage = nil;
@@ -113,18 +113,17 @@
                                         index:(int)index
                                 dbCacheResult:(BOOL)dbCacheResult{
     if(!url) return nil;
-    MTFrameAnimationImage * data = [self cacheObjectForkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
+    MTFrameAnimationImage *data = [self cacheObjectForkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
     if (!data) {
         if (dbCacheResult) {
             data = [_dataBase db_getSourceWithPrefixName:prefixName index:index];
             if (data) return data;
         }
-        NSDictionary * imageOptions = @{(__bridge id)kCGImageSourceShouldCache:@YES,
+        NSDictionary *imageOptions = @{(__bridge id)kCGImageSourceShouldCache:@YES,
                                         (__bridge id)kCGImageSourceShouldCacheImmediately:@YES};
         CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
         if(!sourceRef) return nil;
-        CGImageRef imageRef = CGImageSourceCreateImageAtIndex(sourceRef, 0,
-                                                              (__bridge CFDictionaryRef)imageOptions);
+        CGImageRef imageRef = CGImageSourceCreateImageAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)imageOptions);
         data = (MTFrameAnimationImage *)[UIImage imageWithCGImage:imageRef];
         [self cacheObject:data forkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
         CFRelease(imageRef);
