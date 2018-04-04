@@ -3,6 +3,7 @@ iOS - 试图解决帧动画存在的一些问题的demo
 
 > [iOS内存优化基础](https://www.jianshu.com/p/c58001ae3da5)
 [腾讯帧动画优化方案](https://segmentfault.com/a/1190000007131210)
+[iOS中图片的解压缩](http://www.cocoachina.com/ios/20170227/18784.html)
 
 
 ## 基础内存优化
