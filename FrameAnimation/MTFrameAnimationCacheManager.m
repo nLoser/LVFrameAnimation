@@ -62,7 +62,8 @@
                                         (__bridge id)kCGImageSourceShouldCacheImmediately:@YES};
         CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
         if(!sourceRef) return nil;
-        CGImageRef imageRef = CGImageSourceCreateImageAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)imageOptions);
+        CGImageRef imageRef = CGImageSourceCreateImageAtIndex(sourceRef, 0,
+                                                              (__bridge CFDictionaryRef)imageOptions);
         data = (MTFrameAnimationImage *)[UIImage imageWithCGImage:imageRef];
         [self cacheObject:data forkey:key];
         CFRelease(imageRef);

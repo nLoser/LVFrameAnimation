@@ -226,6 +226,7 @@
 		B1651611207371C300EF9404 /* MTFrameAnimationImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */; };
 		B1651612207371C300EF9404 /* MTFrameAnimationImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */; };
 		B165161520746D3A00EF9404 /* MTFrameAnimationImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B165161420746D3A00EF9404 /* MTFrameAnimationImage.m */; };
+		B16516182074741A00EF9404 /* MTFrameAnimationDataBase.m in Sources */ = {isa = PBXBuildFile; fileRef = B16516172074741A00EF9404 /* MTFrameAnimationDataBase.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -377,6 +378,8 @@
 		B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MTFrameAnimationImageView.m; sourceTree = "<group>"; };
 		B165161320746D3A00EF9404 /* MTFrameAnimationImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MTFrameAnimationImage.h; sourceTree = "<group>"; };
 		B165161420746D3A00EF9404 /* MTFrameAnimationImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MTFrameAnimationImage.m; sourceTree = "<group>"; };
+		B16516162074741A00EF9404 /* MTFrameAnimationDataBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MTFrameAnimationDataBase.h; sourceTree = "<group>"; };
+		B16516172074741A00EF9404 /* MTFrameAnimationDataBase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MTFrameAnimationDataBase.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -482,6 +485,8 @@
 				B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */,
 				B165161320746D3A00EF9404 /* MTFrameAnimationImage.h */,
 				B165161420746D3A00EF9404 /* MTFrameAnimationImage.m */,
+				B16516162074741A00EF9404 /* MTFrameAnimationDataBase.h */,
+				B16516172074741A00EF9404 /* MTFrameAnimationDataBase.m */,
 			);
 			path = FrameAnimation;
 			sourceTree = "<group>";
@@ -982,6 +987,7 @@
 				B165148120731A8F00EF9404 /* ViewController.m in Sources */,
 				B165160520736F8700EF9404 /* LVAllScreenFrameAnimationController.m in Sources */,
 				B1651611207371C300EF9404 /* MTFrameAnimationImageView.m in Sources */,
+				B16516182074741A00EF9404 /* MTFrameAnimationDataBase.m in Sources */,
 				B16514CE207361C200EF9404 /* AllScreenFrameAnimationBaseController.m in Sources */,
 				B16514DB207362B000EF9404 /* MTFactoryObject.m in Sources */,
 				B165148C20731A9100EF9404 /* main.m in Sources */,
