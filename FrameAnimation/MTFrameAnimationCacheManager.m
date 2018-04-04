@@ -24,21 +24,22 @@
     static MTFrameAnimationCacheManager * manager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        manager = [[MTFrameAnimationCacheManager alloc] init];
+        manager = [[MTFrameAnimationCacheManager alloc] initWithDomain:@"defaultCache"];
     });
     return manager;
 }
 
-- (instancetype)init {
+- (instancetype)initWithDomain:(NSString *)domain {
     if (self = [super init]) {
         _cache = [[NSCache alloc] init];
-        _cache.name = @"com.meipai.MTFrameAnimationCacheManager.cache";
+        _cache.name = [NSString stringWithFormat:@"com.meipai.MTFrameAnimationCacheManager.%@",domain];
         _cache.countLimit = 0;
         
         _dataBase = [[MTFrameAnimationDataBase alloc] init];
         
-        [_cacheListResult setValuesForKeysWithDictionary:[_dataBase db_getCacheListResult]];
+        _cacheListResult = [NSMutableDictionary dictionary];
         _localCacheResult = [NSMutableDictionary dictionary];
+        [_cacheListResult setValuesForKeysWithDictionary:[_dataBase db_getCacheListResult]];
     }
     return self;
 }
@@ -60,6 +61,7 @@
                     [self cacheObject:obj forkey:[NSString stringWithFormat:@"%@_%d",prefixName, (int)idx+1]];
                 }];
             }
+            [_localCacheResult setValue:@(1) forKey:prefixName];
         }else {
             for (int i = 1; i <= totalCount; i ++) {
                 NSString *imageName = [NSString stringWithFormat:@"%@_%d.png",prefixName,i];
@@ -77,6 +79,8 @@
     
     if (!dbCacheResult) {
         [_dataBase db_insertSourcesWithPrefixName:prefixName sources:animationArr];
+        [_cacheListResult removeAllObjects];
+        [_cacheListResult setValuesForKeysWithDictionary:[_dataBase db_getCacheListResult]];
     }
     return animationArr;
 }
@@ -101,6 +105,7 @@
         data = (MTFrameAnimationImage *)[UIImage imageWithCGImage:imageRef];
         [self cacheObject:data forkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
         CFRelease(imageRef);
+        NSLog(@"解码");
     }
     return data;
 }

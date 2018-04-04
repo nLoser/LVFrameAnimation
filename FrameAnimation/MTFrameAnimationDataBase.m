@@ -110,6 +110,9 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
         
         [sources enumerateObjectsUsingBlock:^(MTFrameAnimationImage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             @autoreleasepool{
+                //NOTE:解压后的数据太大了不使用
+                //CGDataProviderRef ref = CGImageGetDataProvider(obj.CGImage);
+                //NSData *tempData = (__bridge id) CGDataProviderCopyData(ref);
                 NSData *tempData = UIImagePNGRepresentation(obj);
                 sqlite3_reset(stmt);
                 sqlite3_bind_blob(stmt, 1, [tempData bytes], (int)[tempData length], NULL);

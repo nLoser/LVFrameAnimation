@@ -13,6 +13,9 @@
 
 @interface MTFrameAnimationCacheManager: NSObject
 
+- (instancetype)init UNAVAILABLE_ATTRIBUTE;
++ (instancetype)new UNAVAILABLE_ATTRIBUTE;
+
 + (instancetype)shareManager;
 
 - (NSArray<MTFrameAnimationImage *> *)getAnimationsWithPrefixName:(NSString *)prefixName

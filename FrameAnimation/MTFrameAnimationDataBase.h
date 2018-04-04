@@ -11,6 +11,8 @@
 
 @interface MTFrameAnimationDataBase : NSObject
 
++ (instancetype)new UNAVAILABLE_ATTRIBUTE;
+
 - (NSArray<MTFrameAnimationImage *> *)db_getSourcesWithPrefixName:(NSString *)prefixName;
 
 - (MTFrameAnimationImage *)db_getSourceWithPrefixName:(NSString *)prefixName
