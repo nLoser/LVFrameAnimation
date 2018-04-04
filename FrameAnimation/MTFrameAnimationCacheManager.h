@@ -18,8 +18,17 @@ typedef void (^completion) (NSArray<MTFrameAnimationImage *> *);
 - (instancetype)init UNAVAILABLE_ATTRIBUTE;
 + (instancetype)new UNAVAILABLE_ATTRIBUTE;
 
+/**
+ 返回 MTFrameAnimationCacheManager 分享对象
+ */
 + (instancetype)shareManager;
 
+/**
+ 获取制定前缀的帧动画加载资源
+ @param prefixName 帧动画前缀名，规定XXXX_number.png，XXXX为前缀
+ @param totalCount 帧动画资源的帧数
+ @param completion block返回加载完成的帧动画资源
+ */
 - (void)getAnimationsWithPrefixName:(NSString *)prefixName
                          totalCount:(NSUInteger)totalCount
                          completion:(completion)completion;
