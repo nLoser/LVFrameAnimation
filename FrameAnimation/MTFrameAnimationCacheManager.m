@@ -10,6 +10,8 @@
 #import "MTFrameAnimationDataBase.h"
 
 @interface MTFrameAnimationCacheManager()
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *cacheListResult;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *localCacheResult;
 @property (nonatomic, strong) NSCache *cache;
 @property (nonatomic, strong) MTFrameAnimationDataBase *dataBase;
 @end
@@ -34,6 +36,9 @@
         _cache.countLimit = 0;
         
         _dataBase = [[MTFrameAnimationDataBase alloc] init];
+        
+        [_cacheListResult setValuesForKeysWithDictionary:[_dataBase db_getCacheListResult]];
+        _localCacheResult = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -42,28 +47,51 @@
 
 - (NSArray<MTFrameAnimationImage *> *)getAnimationsWithPrefixName:(NSString *)prefixName
                                                        totalCount:(NSUInteger)totalCount {
-    NSArray * result = [_dataBase db_getSourcesWithPrefixName:prefixName];
-    if (result) return result;
+    BOOL dbCacheResult = [[_cacheListResult objectForKey:prefixName] intValue] == 1 ? YES : NO;
+    BOOL localCacheResult = [[_localCacheResult objectForKey:prefixName] intValue] == 1 ? YES : NO;
     
     NSMutableArray<MTFrameAnimationImage *> *animationArr = [NSMutableArray array];
     @autoreleasepool{
-        for (int i = 1; i <= totalCount; i ++) {
-            NSString *imageName = [NSString stringWithFormat:@"%@_%d.png",prefixName,i];
-            NSString *imageFilePath = [[NSBundle mainBundle] pathForResource:imageName ofType:nil];
-            NSURL *imageFileURL = [NSURL fileURLWithPath:imageFilePath];
-            MTFrameAnimationImage *tempImage = [self getKeyFrameDataRef:imageFileURL key:imageName];
-            if(!tempImage) continue;
-            [animationArr addObject:tempImage];
+        if (dbCacheResult && !localCacheResult) {
+            NSArray *dbResources = [_dataBase db_getSourcesWithPrefixName:prefixName];
+            if (dbResources) {
+                [animationArr addObjectsFromArray:dbResources];
+                [dbResources enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    [self cacheObject:obj forkey:[NSString stringWithFormat:@"%@_%d",prefixName, (int)idx+1]];
+                }];
+            }
+        }else {
+            for (int i = 1; i <= totalCount; i ++) {
+                NSString *imageName = [NSString stringWithFormat:@"%@_%d.png",prefixName,i];
+                NSString *imageFilePath = [[NSBundle mainBundle] pathForResource:imageName ofType:nil];
+                NSURL *imageFileURL = [NSURL fileURLWithPath:imageFilePath];
+                MTFrameAnimationImage *tempImage = [self getKeyFrameDataRef:imageFileURL
+                                                                 prefixName:imageName
+                                                                      index:i
+                                                              dbCacheResult:dbCacheResult];
+                if(!tempImage) continue;
+                [animationArr addObject:tempImage];
+            }
         }
     }
-    [_dataBase db_insertSourcesWithPrefixName:prefixName sources:animationArr];
+    
+    if (!dbCacheResult) {
+        [_dataBase db_insertSourcesWithPrefixName:prefixName sources:animationArr];
+    }
     return animationArr;
 }
 
-- (MTFrameAnimationImage *)getKeyFrameDataRef:(NSURL *)url key:(NSString *)key {
+- (MTFrameAnimationImage *)getKeyFrameDataRef:(NSURL *)url
+                                   prefixName:(NSString *)prefixName
+                                        index:(int)index
+                                dbCacheResult:(BOOL)dbCacheResult{
     if(!url) return nil;
-    MTFrameAnimationImage * data = [self cacheObjectForkey:key];
+    MTFrameAnimationImage * data = [self cacheObjectForkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
     if (!data) {
+        if (dbCacheResult) {
+            data = [_dataBase db_getSourceWithPrefixName:prefixName index:index];
+            if (data) return data;
+        }
         NSDictionary * imageOptions = @{(__bridge id)kCGImageSourceShouldCache:@YES,
                                         (__bridge id)kCGImageSourceShouldCacheImmediately:@YES};
         CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
@@ -71,7 +99,7 @@
         CGImageRef imageRef = CGImageSourceCreateImageAtIndex(sourceRef, 0,
                                                               (__bridge CFDictionaryRef)imageOptions);
         data = (MTFrameAnimationImage *)[UIImage imageWithCGImage:imageRef];
-        [self cacheObject:data forkey:key];
+        [self cacheObject:data forkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
         CFRelease(imageRef);
     }
     return data;

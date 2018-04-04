@@ -477,6 +477,8 @@
 		B16514BB20735F5C00EF9404 /* FrameAnimation */ = {
 			isa = PBXGroup;
 			children = (
+				B16516162074741A00EF9404 /* MTFrameAnimationDataBase.h */,
+				B16516172074741A00EF9404 /* MTFrameAnimationDataBase.m */,
 				B16516072073717600EF9404 /* MTFrameAnimationCacheManager.h */,
 				B16516082073717600EF9404 /* MTFrameAnimationCacheManager.m */,
 				B165160B2073719E00EF9404 /* MTFrameAnimationQueuePool.h */,
@@ -485,8 +487,6 @@
 				B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */,
 				B165161320746D3A00EF9404 /* MTFrameAnimationImage.h */,
 				B165161420746D3A00EF9404 /* MTFrameAnimationImage.m */,
-				B16516162074741A00EF9404 /* MTFrameAnimationDataBase.h */,
-				B16516172074741A00EF9404 /* MTFrameAnimationDataBase.m */,
 			);
 			path = FrameAnimation;
 			sourceTree = "<group>";

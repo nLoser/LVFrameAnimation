@@ -15,11 +15,13 @@ static const char *dbPath = "";
 static NSString *createCacheListTable = @"create table if not exists prefixcache_table(id integer primary key autoincrement, prefixname text, result integer)";
 static NSString *updateCacheListTable = @"update prefixcache_table set result = ? WHERE prefixname = '%@'";
 static NSString *queryCacheListTable = @"select * from prefixcache_table WHERE prefixname = '%@'";
+static NSString *queryCacheListAllTable = @"select * from prefixcache_table";
 static NSString *insertCacheListTable = @"insert into prefixcache_table(prefixname, result) values(?, ?)";
 
 static NSString *createCacheTable = @"create table if not exists %@_table(id integer primary key autoincrement, content BLOB)";
 static NSString *insertCacheTable = @"insert into %@_table(content) values(?)";
 static NSString *queryCacheTable = @"select * from %@_table";
+static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%d'";
 
 @interface MTFrameAnimationDataBase() {
     sqlite3 *db;
@@ -51,11 +53,12 @@ static NSString *queryCacheTable = @"select * from %@_table";
     sqlite3_exec(db, "begin", 0, 0, 0);
     sqlite3_stmt *stmt = NULL;
     
-    NSMutableArray * resourceArr = nil;
+    NSMutableArray *resourceArr = nil;
     if (pv_isLoadCacheResultWithPrefix(prefixName, db, stmt)) {
         sqlite3_reset(stmt);
-        const char * querySql = [[NSString stringWithFormat:queryCacheTable, prefixName] UTF8String];
+        const char *querySql = [[NSString stringWithFormat:queryCacheTable, prefixName] UTF8String];
         if (sqlite3_prepare_v2(db, querySql, -1, &stmt, NULL) == SQLITE_OK) {
+            resourceArr = [NSMutableArray array];
             while (sqlite3_step(stmt) == SQLITE_ROW) {
                 const void *bytes = sqlite3_column_blob(stmt, 1);
                 int size = sqlite3_column_bytes(stmt, 1);
@@ -68,6 +71,29 @@ static NSString *queryCacheTable = @"select * from %@_table";
     sqlite3_finalize(stmt);
     sqlite3_exec(db, "commit", 0, 0, 0);
     return resourceArr;
+}
+
+- (MTFrameAnimationImage *)db_getSourceWithPrefixName:(NSString *)prefixName index:(int)index {
+    index = MAX(0, index-1);
+    sqlite3_exec(db, "begin", 0, 0, 0);
+    sqlite3_stmt *stmt = NULL;
+    
+    if (pv_isLoadCacheResultWithPrefix(prefixName, db, stmt)) {
+        sqlite3_reset(stmt);
+        const char *querySql = [[NSString stringWithFormat:queryCacheTableByIndex,prefixName,index] UTF8String];
+        if (sqlite3_prepare(db, querySql, -1, &stmt, NULL) == SQLITE_OK) {
+            while (sqlite3_step(stmt) == SQLITE_OK) {
+                const void *bytes = sqlite3_column_blob(stmt, 1);
+                int size = sqlite3_column_bytes(stmt, 1);
+                NSData * data = [NSData dataWithBytes:bytes length:size];
+                MTFrameAnimationImage *img = (MTFrameAnimationImage *)[UIImage imageWithData:data];
+                return img;
+            }
+        }
+    }
+    
+    sqlite3_exec(db, "commit", 0, 0, 0);
+    return nil;
 }
 
 - (void)db_insertSourcesWithPrefixName:(NSString *)prefixName
@@ -84,7 +110,7 @@ static NSString *queryCacheTable = @"select * from %@_table";
         
         [sources enumerateObjectsUsingBlock:^(MTFrameAnimationImage * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             @autoreleasepool{
-                NSData * tempData = UIImagePNGRepresentation(obj);
+                NSData *tempData = UIImagePNGRepresentation(obj);
                 sqlite3_reset(stmt);
                 sqlite3_bind_blob(stmt, 1, [tempData bytes], (int)[tempData length], NULL);
                 if (sqlite3_step(stmt) != SQLITE_DONE) {
@@ -101,12 +127,29 @@ static NSString *queryCacheTable = @"select * from %@_table";
     sqlite3_exec(db, "commit", 0, 0, 0);
 }
 
+- (NSDictionary<NSString *,NSNumber *> *)db_getCacheListResult {
+    NSMutableDictionary *cacheListResultDict = [NSMutableDictionary dictionary];
+    sqlite3_exec(db, "begin", 0, 0, 0);
+    sqlite3_stmt *stmt = NULL;
+    
+    const char *querySql = [queryCacheListAllTable UTF8String];
+    if (sqlite3_prepare_v2(db, querySql, -1, &stmt, NULL) == SQLITE_OK) {
+        while (sqlite3_step(stmt) == SQLITE_OK) {
+            NSString * cacheName = [NSString stringWithUTF8String:(char *)sqlite3_column_text(stmt, 1)];
+            NSNumber * result = [NSNumber numberWithInt:sqlite3_column_int(stmt, 2)];
+            [cacheListResultDict setValue:result forKey:cacheName];
+        }
+    }
+    sqlite3_exec(db, "commit", 0, 0, 0);
+    return cacheListResultDict;
+}
+
 #pragma mark - Private
 
 static BOOL pv_isLoadCacheResultWithPrefix(NSString *prefixName, sqlite3 *db, sqlite3_stmt *stmt) {
     sqlite3_reset(stmt);
     BOOL find = NO;
-    const char * querySqlString = [[NSString stringWithFormat:queryCacheListTable, prefixName] UTF8String];
+    const char *querySqlString = [[NSString stringWithFormat:queryCacheListTable, prefixName] UTF8String];
     if (sqlite3_prepare_v2(db, querySqlString, -1, &stmt, NULL) == SQLITE_OK) {
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             find = sqlite3_column_int(stmt, 2) == 1 ? YES : NO;

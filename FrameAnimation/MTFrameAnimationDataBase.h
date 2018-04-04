@@ -13,7 +13,12 @@
 
 - (NSArray<MTFrameAnimationImage *> *)db_getSourcesWithPrefixName:(NSString *)prefixName;
 
+- (MTFrameAnimationImage *)db_getSourceWithPrefixName:(NSString *)prefixName
+                                                index:(int)index;
+
 - (void)db_insertSourcesWithPrefixName:(NSString *)prefixName
                                sources:(NSArray<MTFrameAnimationImage *> *)sources;
+
+- (NSDictionary<NSString *, NSNumber *> *)db_getCacheListResult;
 
 @end
