@@ -11,6 +11,8 @@
 
 #import "MTFrameAnimationImage.h"
 
+typedef void (^completion) (NSArray<MTFrameAnimationImage *> *);
+
 @interface MTFrameAnimationCacheManager: NSObject
 
 - (instancetype)init UNAVAILABLE_ATTRIBUTE;
@@ -18,7 +20,8 @@
 
 + (instancetype)shareManager;
 
-- (NSArray<MTFrameAnimationImage *> *)getAnimationsWithPrefixName:(NSString *)prefixName
-                                                       totalCount:(NSUInteger)totalCount;
+- (void)getAnimationsWithPrefixName:(NSString *)prefixName
+                         totalCount:(NSUInteger)totalCount
+                         completion:(completion)completion;
 
 @end

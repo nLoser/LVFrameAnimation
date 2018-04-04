@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "MTFrameAnimationCacheManager.h"
-#import "MTFrameAnimationQueuePool.h"
 
 @interface MTFrameAnimationImageView : UIImageView
 

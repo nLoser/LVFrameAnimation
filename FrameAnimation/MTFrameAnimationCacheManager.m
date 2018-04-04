@@ -7,6 +7,9 @@
 //
 
 #import "MTFrameAnimationCacheManager.h"
+
+#import "YYDispatchQueuePool.h"
+
 #import "MTFrameAnimationDataBase.h"
 
 @interface MTFrameAnimationCacheManager()
@@ -14,6 +17,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *localCacheResult;
 @property (nonatomic, strong) NSCache *cache;
 @property (nonatomic, strong) MTFrameAnimationDataBase *dataBase;
+@property (nonatomic, strong) dispatch_queue_t ioQueue;
 @end
 
 @implementation MTFrameAnimationCacheManager
@@ -46,8 +50,9 @@
 
 #pragma mark - Public
 
-- (NSArray<MTFrameAnimationImage *> *)getAnimationsWithPrefixName:(NSString *)prefixName
-                                                       totalCount:(NSUInteger)totalCount {
+- (void)getAnimationsWithPrefixName:(NSString *)prefixName
+                         totalCount:(NSUInteger)totalCount
+                         completion:(completion)completion{
     BOOL dbCacheResult = [[_cacheListResult objectForKey:prefixName] intValue] == 1 ? YES : NO;
     BOOL localCacheResult = [[_localCacheResult objectForKey:prefixName] intValue] == 1 ? YES : NO;
     
@@ -63,26 +68,47 @@
             }
             [_localCacheResult setValue:@(1) forKey:prefixName];
         }else {
+            
+            __block NSMutableDictionary * sortSources = [NSMutableDictionary dictionaryWithCapacity:totalCount];
             for (int i = 1; i <= totalCount; i ++) {
-                NSString *imageName = [NSString stringWithFormat:@"%@_%d.png",prefixName,i];
-                NSString *imageFilePath = [[NSBundle mainBundle] pathForResource:imageName ofType:nil];
-                NSURL *imageFileURL = [NSURL fileURLWithPath:imageFilePath];
-                MTFrameAnimationImage *tempImage = [self getKeyFrameDataRef:imageFileURL
-                                                                 prefixName:imageName
-                                                                      index:i
-                                                              dbCacheResult:dbCacheResult];
-                if(!tempImage) continue;
-                [animationArr addObject:tempImage];
+                __weak typeof(self) weakSelf = self;
+                __block MTFrameAnimationImage *tempImage = nil;
+                
+                dispatch_async(YYDispatchQueueGetForQOS(NSQualityOfServiceUserInitiated), ^{
+                    NSString *imageName = [NSString stringWithFormat:@"%@_%d.png",prefixName,i];
+                    NSString *imageFilePath = [[NSBundle mainBundle] pathForResource:imageName ofType:nil];
+                    NSURL *imageFileURL = [NSURL fileURLWithPath:imageFilePath];
+                    tempImage = [self getKeyFrameDataRef:imageFileURL
+                                              prefixName:imageName
+                                                   index:i
+                                           dbCacheResult:dbCacheResult];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if(tempImage) {
+                            [sortSources setValue:tempImage forKey:[NSString stringWithFormat:@"%d",i]];
+                        };
+                        if (i == totalCount) {
+                            if (!dbCacheResult) {
+                                [weakSelf.dataBase db_insertSourcesWithPrefixName:prefixName sources:animationArr];
+                                [weakSelf.cacheListResult removeAllObjects];
+                                [weakSelf.cacheListResult setValuesForKeysWithDictionary:[weakSelf.dataBase db_getCacheListResult]];
+                            }
+                            if (completion) {
+                                NSMutableArray *allKeys = [NSMutableArray arrayWithArray:sortSources.allKeys];
+                                [allKeys sortUsingComparator: ^NSComparisonResult (NSString *key1, NSString *key2) {
+                                    return [@(key1.intValue) compare:@(key2.intValue)];
+                                }];
+                                for(id key in allKeys) {
+                                    id object = [sortSources objectForKey:key];
+                                    [animationArr addObject:object];
+                                }
+                                completion(animationArr);
+                            }
+                        }
+                    });
+                });
             }
         }
     }
-    
-    if (!dbCacheResult) {
-        [_dataBase db_insertSourcesWithPrefixName:prefixName sources:animationArr];
-        [_cacheListResult removeAllObjects];
-        [_cacheListResult setValuesForKeysWithDictionary:[_dataBase db_getCacheListResult]];
-    }
-    return animationArr;
 }
 
 - (MTFrameAnimationImage *)getKeyFrameDataRef:(NSURL *)url
@@ -105,7 +131,6 @@
         data = (MTFrameAnimationImage *)[UIImage imageWithCGImage:imageRef];
         [self cacheObject:data forkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
         CFRelease(imageRef);
-        NSLog(@"解码");
     }
     return data;
 }

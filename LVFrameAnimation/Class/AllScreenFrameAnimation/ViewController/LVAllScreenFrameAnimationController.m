@@ -43,8 +43,11 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [_giftAnimationImageView stopAnimating];
-    _giftAnimationImageView.animationImages = [_frameAnimationCache getAnimationsWithPrefixName:@"image" totalCount:96];
-    [_giftAnimationImageView startAnimating];
+    __weak typeof(self) weakSelf = self;
+    [_frameAnimationCache getAnimationsWithPrefixName:@"image" totalCount:96 completion:^(NSArray<MTFrameAnimationImage *> *animations) {
+        weakSelf.giftAnimationImageView.animationImages = animations;
+        [weakSelf.giftAnimationImageView startAnimating];
+    }];
 }
 
 @end

@@ -221,12 +221,11 @@
 		B165160620736F8700EF9404 /* LVAllScreenFrameAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B165160420736F8700EF9404 /* LVAllScreenFrameAnimationController.m */; };
 		B16516092073717600EF9404 /* MTFrameAnimationCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B16516082073717600EF9404 /* MTFrameAnimationCacheManager.m */; };
 		B165160A2073717600EF9404 /* MTFrameAnimationCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B16516082073717600EF9404 /* MTFrameAnimationCacheManager.m */; };
-		B165160D2073719E00EF9404 /* MTFrameAnimationQueuePool.m in Sources */ = {isa = PBXBuildFile; fileRef = B165160C2073719E00EF9404 /* MTFrameAnimationQueuePool.m */; };
-		B165160E2073719E00EF9404 /* MTFrameAnimationQueuePool.m in Sources */ = {isa = PBXBuildFile; fileRef = B165160C2073719E00EF9404 /* MTFrameAnimationQueuePool.m */; };
 		B1651611207371C300EF9404 /* MTFrameAnimationImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */; };
 		B1651612207371C300EF9404 /* MTFrameAnimationImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */; };
 		B165161520746D3A00EF9404 /* MTFrameAnimationImage.m in Sources */ = {isa = PBXBuildFile; fileRef = B165161420746D3A00EF9404 /* MTFrameAnimationImage.m */; };
 		B16516182074741A00EF9404 /* MTFrameAnimationDataBase.m in Sources */ = {isa = PBXBuildFile; fileRef = B16516172074741A00EF9404 /* MTFrameAnimationDataBase.m */; };
+		B165161B2074C27800EF9404 /* YYDispatchQueuePool.m in Sources */ = {isa = PBXBuildFile; fileRef = B165161A2074C27800EF9404 /* YYDispatchQueuePool.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -372,14 +371,14 @@
 		B165160420736F8700EF9404 /* LVAllScreenFrameAnimationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LVAllScreenFrameAnimationController.m; sourceTree = "<group>"; };
 		B16516072073717600EF9404 /* MTFrameAnimationCacheManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MTFrameAnimationCacheManager.h; sourceTree = "<group>"; };
 		B16516082073717600EF9404 /* MTFrameAnimationCacheManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MTFrameAnimationCacheManager.m; sourceTree = "<group>"; };
-		B165160B2073719E00EF9404 /* MTFrameAnimationQueuePool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MTFrameAnimationQueuePool.h; sourceTree = "<group>"; };
-		B165160C2073719E00EF9404 /* MTFrameAnimationQueuePool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MTFrameAnimationQueuePool.m; sourceTree = "<group>"; };
 		B165160F207371C300EF9404 /* MTFrameAnimationImageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MTFrameAnimationImageView.h; sourceTree = "<group>"; };
 		B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MTFrameAnimationImageView.m; sourceTree = "<group>"; };
 		B165161320746D3A00EF9404 /* MTFrameAnimationImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MTFrameAnimationImage.h; sourceTree = "<group>"; };
 		B165161420746D3A00EF9404 /* MTFrameAnimationImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MTFrameAnimationImage.m; sourceTree = "<group>"; };
 		B16516162074741A00EF9404 /* MTFrameAnimationDataBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MTFrameAnimationDataBase.h; sourceTree = "<group>"; };
 		B16516172074741A00EF9404 /* MTFrameAnimationDataBase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MTFrameAnimationDataBase.m; sourceTree = "<group>"; };
+		B16516192074C27800EF9404 /* YYDispatchQueuePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYDispatchQueuePool.h; sourceTree = "<group>"; };
+		B165161A2074C27800EF9404 /* YYDispatchQueuePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YYDispatchQueuePool.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -477,12 +476,12 @@
 		B16514BB20735F5C00EF9404 /* FrameAnimation */ = {
 			isa = PBXGroup;
 			children = (
+				B16516192074C27800EF9404 /* YYDispatchQueuePool.h */,
+				B165161A2074C27800EF9404 /* YYDispatchQueuePool.m */,
 				B16516162074741A00EF9404 /* MTFrameAnimationDataBase.h */,
 				B16516172074741A00EF9404 /* MTFrameAnimationDataBase.m */,
 				B16516072073717600EF9404 /* MTFrameAnimationCacheManager.h */,
 				B16516082073717600EF9404 /* MTFrameAnimationCacheManager.m */,
-				B165160B2073719E00EF9404 /* MTFrameAnimationQueuePool.h */,
-				B165160C2073719E00EF9404 /* MTFrameAnimationQueuePool.m */,
 				B165160F207371C300EF9404 /* MTFrameAnimationImageView.h */,
 				B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */,
 				B165161320746D3A00EF9404 /* MTFrameAnimationImage.h */,
@@ -983,7 +982,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B16514D2207361D100EF9404 /* SpriteFrameAnimationBaseController.m in Sources */,
-				B165160D2073719E00EF9404 /* MTFrameAnimationQueuePool.m in Sources */,
 				B165148120731A8F00EF9404 /* ViewController.m in Sources */,
 				B165160520736F8700EF9404 /* LVAllScreenFrameAnimationController.m in Sources */,
 				B1651611207371C300EF9404 /* MTFrameAnimationImageView.m in Sources */,
@@ -995,6 +993,7 @@
 				B165161520746D3A00EF9404 /* MTFrameAnimationImage.m in Sources */,
 				B16516092073717600EF9404 /* MTFrameAnimationCacheManager.m in Sources */,
 				B165147E20731A8F00EF9404 /* AppDelegate.m in Sources */,
+				B165161B2074C27800EF9404 /* YYDispatchQueuePool.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1011,7 +1010,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B165160620736F8700EF9404 /* LVAllScreenFrameAnimationController.m in Sources */,
-				B165160E2073719E00EF9404 /* MTFrameAnimationQueuePool.m in Sources */,
 				B16514D3207361D100EF9404 /* SpriteFrameAnimationBaseController.m in Sources */,
 				B16514A120731A9100EF9404 /* LVFrameAnimationUITests.m in Sources */,
 				B16514D72073620800EF9404 /* NomalAllScreenFrameAnimationController.m in Sources */,
