@@ -13,7 +13,17 @@
 
 typedef void (^completion) (NSArray<MTFrameAnimationImage *> *);
 
+typedef NS_ENUM(NSUInteger, kMTFrameAnimationCacheManagerStatus) {
+    kMTFrameAnimationCacheManagerStatusIdle,    ///< 加载闲置
+    kMTFrameAnimationCacheManagerStatusLoading  ///< 正在加载中
+};
+
 @interface MTFrameAnimationCacheManager: NSObject
+
+/**
+ 任务状态
+ */
+@property (nonatomic, assign, readonly) kMTFrameAnimationCacheManagerStatus status;
 
 - (instancetype)init UNAVAILABLE_ATTRIBUTE;
 + (instancetype)new UNAVAILABLE_ATTRIBUTE;
