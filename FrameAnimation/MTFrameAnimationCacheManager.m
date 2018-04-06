@@ -124,7 +124,7 @@
         CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
         if(!sourceRef) return nil;
         CGImageRef imageRef = CGImageSourceCreateImageAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)imageOptions);
-        data = (MTFrameAnimationImage *)[UIImage imageWithCGImage:imageRef];
+        data = (MTFrameAnimationImage *)[UIImage imageWithCGImage:YYCGImageCreateDecoded(imageRef)];
         [self cacheObject:data forkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
         CFRelease(imageRef);
     }
@@ -139,6 +139,44 @@
 
 - (void)cacheObject:(id)obj forkey:(NSString *)key {
     [_cache setObject:obj forKey:key];
+}
+
+#pragma mark - Private - Decode Image
+
+//http://www.cocoachina.com/ios/20170227/18784.html
+CGImageRef YYCGImageCreateDecoded(CGImageRef imageRef) {
+    if(!imageRef) return NULL;
+    size_t width = CGImageGetWidth(imageRef);
+    size_t height = CGImageGetHeight(imageRef);
+    if(width == 0 || height == 0) return NULL;
+    
+    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef) & kCGBitmapAlphaInfoMask;
+    BOOL hasAlpha = NO;
+    if (alphaInfo == kCGImageAlphaPremultipliedLast ||
+        alphaInfo == kCGImageAlphaPremultipliedFirst ||
+        alphaInfo == kCGImageAlphaLast ||
+        alphaInfo == kCGImageAlphaFirst) {
+        hasAlpha = YES;
+    }
+    // BGRA8888 (premultiplied) or BGRX8888
+    // same as UIGraphicsBeginImageContext() and -[UIView drawRect:]
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
+    bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
+    CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, 0, YYCGColorSpaceGetDeviceRGB(), bitmapInfo);
+    if (!context) return NULL;
+    CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef); // decode
+    CGImageRef newImage = CGBitmapContextCreateImage(context);
+    CFRelease(context);
+    return newImage;
+}
+
+CGColorSpaceRef YYCGColorSpaceGetDeviceRGB() {
+    static CGColorSpaceRef space;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        space = CGColorSpaceCreateDeviceRGB();
+    });
+    return space;
 }
 
 @end

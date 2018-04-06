@@ -21,6 +21,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.automaticallyAdjustsScrollViewInsets = NO;
     self.TableView.delegate = self;
     self.TableView.dataSource = self;
     [self.TableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
