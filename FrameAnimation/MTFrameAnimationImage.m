@@ -8,22 +8,10 @@
 
 #import "MTFrameAnimationImage.h"
 
-@interface MTFrameAnimationImage()<NSDiscardableContent>
+@interface MTFrameAnimationImage()
 
 @end
 
 @implementation MTFrameAnimationImage
-
-- (BOOL)beginContentAccess {
-    NSLog(@"加入");
-    return _isUsing;
-}
-
-//- (void)endContentAccess;
-//- (void)discardContentIfPossible;
-- (BOOL)isContentDiscarded {
-    NSLog(@"删除");
-    return !_isUsing;
-}
 
 @end

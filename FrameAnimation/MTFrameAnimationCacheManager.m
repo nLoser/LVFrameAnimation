@@ -67,7 +67,7 @@
     @autoreleasepool {
         
         if (dbCacheResult && !localCacheResult) {
-            NSArray *dbResources = [_dataBase db_getSourcesWithPrefixName:prefixName];
+            NSArray<MTFrameAnimationImage *> *dbResources = [_dataBase loadFrameSourcesWithPrefixName:prefixName];
             if (dbResources) {
                 [animationArr addObjectsFromArray:dbResources];
                 [dbResources enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
@@ -89,7 +89,7 @@
                     if(i == totalCount) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (!dbCacheResult) {
-                                [weakSelf.dataBase db_insertSourcesWithPrefixName:prefixName sources:animationArr];
+                                [weakSelf.dataBase insertFrameSourcesWithPrefixName:prefixName sources:animationArr];
                                 [weakSelf.cacheListResult removeAllObjects];
                                 [weakSelf.cacheListResult setValuesForKeysWithDictionary:[weakSelf.dataBase db_getCacheListResult]];
                             }
@@ -117,7 +117,7 @@ static MTFrameAnimationImage * GetKeyFrameImageData(NSString * prefixName, int i
     MTFrameAnimationImage *data = [this cacheObjectForkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
     if (!data) {
         if (dbCacheResult) {
-            data = [this->_dataBase db_getSourceWithPrefixName:prefixName index:index];
+            data = [this->_dataBase loadFrameWithPrefixName:prefixName index:index];
             if (data) return data;
         }
         NSURL * url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:prefixName ofType:nil]];

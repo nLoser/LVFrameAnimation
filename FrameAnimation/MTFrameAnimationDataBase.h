@@ -18,7 +18,7 @@
  @param prefixName 帧动画前缀名，规定XXXX_number.png，XXXX为前缀
  @return 提前加载图片帧
  */
-- (NSArray<MTFrameAnimationImage *> *)db_getSourcesWithPrefixName:(NSString *)prefixName;
+- (NSArray<MTFrameAnimationImage *> *)loadFrameSourcesWithPrefixName:(NSString *)prefixName;
 
 
 /**
@@ -27,8 +27,7 @@
  @param index 帧动画的索引，规定XXXX_number.png，number为索引
  @return 提前加载图片
  */
-- (MTFrameAnimationImage *)db_getSourceWithPrefixName:(NSString *)prefixName
-                                                index:(int)index;
+- (MTFrameAnimationImage *)loadFrameWithPrefixName:(NSString *)prefixName index:(int)index;
 
 
 /**
@@ -37,8 +36,8 @@
  @param prefixName 帧动画前缀名，规定XXXX_number.png，XXXX为前缀
  @param sources 帧动画加载信息
  */
-- (void)db_insertSourcesWithPrefixName:(NSString *)prefixName
-                               sources:(NSArray<MTFrameAnimationImage *> *)sources;
+- (void)insertFrameSourcesWithPrefixName:(NSString *)prefixName
+                                 sources:(NSArray<MTFrameAnimationImage *> *)sources;
 
 
 /**

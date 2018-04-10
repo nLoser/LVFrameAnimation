@@ -49,7 +49,7 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
 
 #pragma mark - Public
 
-- (NSArray<MTFrameAnimationImage *> *)db_getSourcesWithPrefixName:(NSString *)prefixName {
+- (NSArray<MTFrameAnimationImage *> *)loadFrameSourcesWithPrefixName:(NSString *)prefixName {
     sqlite3_exec(db, "begin", 0, 0, 0);
     sqlite3_stmt *stmt = NULL;
     
@@ -73,7 +73,7 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
     return resourceArr;
 }
 
-- (MTFrameAnimationImage *)db_getSourceWithPrefixName:(NSString *)prefixName index:(int)index {
+- (MTFrameAnimationImage *)loadFrameWithPrefixName:(NSString *)prefixName index:(int)index {
     index = MAX(0, index-1);
     sqlite3_exec(db, "begin", 0, 0, 0);
     sqlite3_stmt *stmt = NULL;
@@ -96,8 +96,8 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
     return nil;
 }
 
-- (void)db_insertSourcesWithPrefixName:(NSString *)prefixName
-                               sources:(NSArray<MTFrameAnimationImage *> *)sources {
+- (void)insertFrameSourcesWithPrefixName:(NSString *)prefixName
+                                 sources:(NSArray<MTFrameAnimationImage *> *)sources {
     sqlite3_exec(db, [[NSString stringWithFormat:createCacheTable, prefixName] UTF8String], NULL, NULL, NULL);
     
     sqlite3_exec(db, "begin", 0, 0, 0);
