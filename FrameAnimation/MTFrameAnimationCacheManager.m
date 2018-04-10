@@ -114,10 +114,10 @@
 
 static CGImageRef loadKeyFrameImageData(NSString * prefixName, int index, BOOL dbCacheResult, MTFrameAnimationCacheManager * this) {
     CGImageRef data = NULL;
-    if (dbCacheResult) {
-        data = [this->_dataBase loadFrameWithPrefixName:prefixName index:index].CGImage;
-        if (data) return data;
-    }
+//    if (dbCacheResult) {
+//        data = [this->_dataBase loadFrameWithPrefixName:prefixName index:index].CGImage;
+//        if (data) return data;
+//    }
     NSString *sourceName = [NSString stringWithFormat:@"%@_%d.png",prefixName, index];
     NSURL * url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:sourceName ofType:nil]];
     NSDictionary *imageOptions = @{(__bridge id)kCGImageSourceShouldCache:@YES,

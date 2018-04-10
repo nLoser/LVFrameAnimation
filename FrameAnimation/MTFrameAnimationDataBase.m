@@ -98,6 +98,7 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
     if (img) {
         sqlite3_exec(db, "commit", 0, 0, 0);
     }
+
     return img;
 }
 
