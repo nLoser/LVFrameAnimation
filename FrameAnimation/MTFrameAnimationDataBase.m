@@ -78,22 +78,24 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
     sqlite3_exec(db, "begin", 0, 0, 0);
     sqlite3_stmt *stmt = NULL;
     
+    MTFrameAnimationImage *img = nil;
+    
     if (pv_isLoadCacheResultWithPrefix(prefixName, db, stmt)) {
         sqlite3_reset(stmt);
         const char *querySql = [[NSString stringWithFormat:queryCacheTableByIndex,prefixName,index] UTF8String];
-        if (sqlite3_prepare(db, querySql, -1, &stmt, NULL) == SQLITE_OK) {
+        if (sqlite3_prepare(db, querySql, -1, &stmt, NULL) == SQLITE_ROW) {
             while (sqlite3_step(stmt) == SQLITE_OK) {
                 const void *bytes = sqlite3_column_blob(stmt, 1);
                 int size = sqlite3_column_bytes(stmt, 1);
                 NSData *data = [NSData dataWithBytes:bytes length:size];
-                MTFrameAnimationImage *img = (MTFrameAnimationImage *)[UIImage imageWithData:data];
-                return img;
+                img = (MTFrameAnimationImage *)[UIImage imageWithData:data];
+                break;
             }
         }
     }
     
     sqlite3_exec(db, "commit", 0, 0, 0);
-    return nil;
+    return img;
 }
 
 - (void)insertFrameSourcesWithPrefixName:(NSString *)prefixName
@@ -111,6 +113,7 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
         [sources enumerateObjectsUsingBlock:^(MTFrameAnimationImage *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
             @autoreleasepool{
                 NSData *tempData = UIImagePNGRepresentation(obj);
+                NSLog(@"--%@",tempData);
                 sqlite3_reset(stmt);
                 sqlite3_bind_blob(stmt, 1, [tempData bytes], (int)[tempData length], NULL);
                 if (sqlite3_step(stmt) != SQLITE_DONE) {
@@ -134,7 +137,7 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
     
     const char *querySql = [queryCacheListAllTable UTF8String];
     if (sqlite3_prepare_v2(db, querySql, -1, &stmt, NULL) == SQLITE_OK) {
-        while (sqlite3_step(stmt) == SQLITE_OK) {
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
             NSString *cacheName = [NSString stringWithUTF8String:(char *)sqlite3_column_text(stmt, 1)];
             NSNumber *result = [NSNumber numberWithInt:sqlite3_column_int(stmt, 2)];
             [cacheListResultDict setValue:result forKey:cacheName];

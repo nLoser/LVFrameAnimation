@@ -43,6 +43,8 @@ typedef NS_ENUM(NSUInteger, kMTFrameAnimationCacheManagerStatus) {
                                totalCount:(NSUInteger)totalCount
                                completion:(completion)completion;
 
-
+- (void)loadFrameAnimationWithPrefixName:(NSString *)prefixName
+                                   range:(NSRange *)range
+                              completion:(completion)completion;
 
 @end

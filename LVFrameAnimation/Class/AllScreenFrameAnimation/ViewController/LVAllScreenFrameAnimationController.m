@@ -47,9 +47,11 @@
     [_frameAnimationCache loadFrameAnimationsWithPrefixName:@"image"
                                                  totalCount:96
                                                  completion:^(NSArray<MTFrameAnimationImage *> *animations) {
-        weakSelf.giftAnimationImageView.animationImages = animations;
-        [weakSelf.giftAnimationImageView startAnimating];
-    }];
+                                                     if (animations) {
+                                                         weakSelf.giftAnimationImageView.animationImages = animations;
+                                                         [weakSelf.giftAnimationImageView startAnimating];
+                                                     }
+                                                 }];
 }
 
 @end
