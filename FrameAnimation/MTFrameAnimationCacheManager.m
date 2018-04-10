@@ -12,6 +12,8 @@
 
 #import "MTFrameAnimationDataBase.h"
 
+#import "UIImage+Util.h"
+
 @interface MTFrameAnimationCacheManager()
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *cacheListResult;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *localCacheResult;
@@ -69,7 +71,10 @@
             if (localCacheResult) {
                 @autoreleasepool{
                     for (int i = 1; i <= totalCount; i++) {
-                        [animationArr addObject:loadKeyFrameImageData(prefixName, i, YES, self)];
+                        UIImage *img = (__bridge UIImage *)(loadKeyFrameImageData(prefixName, i, YES, self));
+                        if (img) {
+                            [animationArr addObject:(id)img];
+                        }
                     }
                 }
             }else {
@@ -91,7 +96,7 @@
                 __weak typeof(self) weakSelf = self;
                 dispatch_async(YYDispatchQueueGetForQOS(NSQualityOfServiceUserInitiated), ^{
                     __block MTFrameAnimationImage *tempImage = nil;
-                    tempImage = loadKeyFrameImageData(prefixName, i, dbCacheResult, self);
+                    tempImage = (id)[UIImage imageWithCGImage:loadKeyFrameImageData(prefixName, i, dbCacheResult, self)];
                     if(tempImage) {
                         [weakSelf.tempKeyFrameImageSortSources setValue:tempImage forKey:[NSString stringWithFormat:@"%d",i]];
                     };
@@ -145,11 +150,11 @@
 
 #pragma mark - Private - Decode Image
 
-static MTFrameAnimationImage * loadKeyFrameImageData(NSString * prefixName, int index, BOOL dbCacheResult, MTFrameAnimationCacheManager * this) {
-    MTFrameAnimationImage *data = [this cacheObjectForkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
-    if (data == nil || data == (id)kCFNull) {
+static CGImageRef loadKeyFrameImageData(NSString * prefixName, int index, BOOL dbCacheResult, MTFrameAnimationCacheManager * this) {
+    CGImageRef data = (__bridge CGImageRef)([this cacheObjectForkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]]);
+    if (data == NULL) {
         if (dbCacheResult) {
-            data = [this->_dataBase loadFrameWithPrefixName:prefixName index:index];
+            data = [this->_dataBase loadFrameWithPrefixName:prefixName index:index].CGImage;
             if (data) return data;
         }
         NSString *sourceName = [NSString stringWithFormat:@"%@_%d.png",prefixName, index];
@@ -158,48 +163,14 @@ static MTFrameAnimationImage * loadKeyFrameImageData(NSString * prefixName, int 
                                        (__bridge id)kCGImageSourceShouldCacheImmediately:@YES};
         CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
         if(!sourceRef) return nil;
+        
         CGImageRef imageRef = CGImageSourceCreateImageAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)imageOptions);
-        data = (MTFrameAnimationImage *)[UIImage imageWithCGImage:YYCGImageCreateDecoded(imageRef)];
-        [this cacheObject:data forkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
+        data = YYCGImageCreateDecoded(imageRef);
+        [this cacheObject:(__bridge id)(data) forkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
+        
         CFRelease(imageRef);
     }
     return data;
-}
-
-//http://www.cocoachina.com/ios/20170227/18784.html
-CGImageRef YYCGImageCreateDecoded(CGImageRef imageRef) {
-    if(!imageRef) return NULL;
-    size_t width = CGImageGetWidth(imageRef);
-    size_t height = CGImageGetHeight(imageRef);
-    if(width == 0 || height == 0) return NULL;
-    
-    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef) & kCGBitmapAlphaInfoMask;
-    BOOL hasAlpha = NO;
-    if (alphaInfo == kCGImageAlphaPremultipliedLast ||
-        alphaInfo == kCGImageAlphaPremultipliedFirst ||
-        alphaInfo == kCGImageAlphaLast ||
-        alphaInfo == kCGImageAlphaFirst) {
-        hasAlpha = YES;
-    }
-    // BGRA8888 (premultiplied) or BGRX8888
-    // same as UIGraphicsBeginImageContext() and -[UIView drawRect:]
-    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
-    bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
-    CGContextRef context = CGBitmapContextCreate(NULL, width, height, 8, 0, YYCGColorSpaceGetDeviceRGB(), bitmapInfo);
-    if (!context) return NULL;
-    CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef); // decode
-    CGImageRef newImage = CGBitmapContextCreateImage(context);
-    CFRelease(context);
-    return newImage;
-}
-
-CGColorSpaceRef YYCGColorSpaceGetDeviceRGB() {
-    static CGColorSpaceRef space;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        space = CGColorSpaceCreateDeviceRGB();
-    });
-    return space;
 }
 
 @end

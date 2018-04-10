@@ -10,6 +10,8 @@
 #import <sqlite3.h>
 #import <pthread.h>
 
+#import "UIImage+Util.h"
+
 static const char *dbPath = "";
 
 static NSString *createCacheListTable = @"create table if not exists prefixcache_table(id integer primary key autoincrement, prefixname text, result integer)";
@@ -113,7 +115,6 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
         [sources enumerateObjectsUsingBlock:^(MTFrameAnimationImage *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
             @autoreleasepool{
                 NSData *tempData = UIImagePNGRepresentation(obj);
-                NSLog(@"--%@",tempData);
                 sqlite3_reset(stmt);
                 sqlite3_bind_blob(stmt, 1, [tempData bytes], (int)[tempData length], NULL);
                 if (sqlite3_step(stmt) != SQLITE_DONE) {

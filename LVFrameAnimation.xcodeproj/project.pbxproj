@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B1415242207C843E00AE21DD /* UIImage+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = B1415241207C843E00AE21DD /* UIImage+Util.m */; };
 		B165147E20731A8F00EF9404 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B165147D20731A8F00EF9404 /* AppDelegate.m */; };
 		B165148120731A8F00EF9404 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B165148020731A8F00EF9404 /* ViewController.m */; };
 		B165148420731A8F00EF9404 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B165148220731A8F00EF9404 /* Main.storyboard */; };
@@ -246,6 +247,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B1415240207C843E00AE21DD /* UIImage+Util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImage+Util.h"; sourceTree = "<group>"; };
+		B1415241207C843E00AE21DD /* UIImage+Util.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Util.m"; sourceTree = "<group>"; };
 		B165147920731A8F00EF9404 /* LVFrameAnimation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LVFrameAnimation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B165147C20731A8F00EF9404 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B165147D20731A8F00EF9404 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -486,6 +489,8 @@
 				B1651610207371C300EF9404 /* MTFrameAnimationImageView.m */,
 				B165161320746D3A00EF9404 /* MTFrameAnimationImage.h */,
 				B165161420746D3A00EF9404 /* MTFrameAnimationImage.m */,
+				B1415240207C843E00AE21DD /* UIImage+Util.h */,
+				B1415241207C843E00AE21DD /* UIImage+Util.m */,
 			);
 			path = FrameAnimation;
 			sourceTree = "<group>";
@@ -986,6 +991,7 @@
 				B165160520736F8700EF9404 /* LVAllScreenFrameAnimationController.m in Sources */,
 				B1651611207371C300EF9404 /* MTFrameAnimationImageView.m in Sources */,
 				B16516182074741A00EF9404 /* MTFrameAnimationDataBase.m in Sources */,
+				B1415242207C843E00AE21DD /* UIImage+Util.m in Sources */,
 				B16514CE207361C200EF9404 /* AllScreenFrameAnimationBaseController.m in Sources */,
 				B16514DB207362B000EF9404 /* MTFactoryObject.m in Sources */,
 				B165148C20731A9100EF9404 /* main.m in Sources */,
