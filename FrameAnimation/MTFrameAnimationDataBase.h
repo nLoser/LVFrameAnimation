@@ -43,6 +43,6 @@
 /**
  数据库已经插入的帧动画列表
  */
-- (NSDictionary<NSString *, NSNumber *> *)db_getCacheListResult;
+- (NSDictionary<NSString *, NSNumber *> *)loadCacheListResult;
 
 @end

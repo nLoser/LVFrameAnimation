@@ -39,8 +39,10 @@ typedef NS_ENUM(NSUInteger, kMTFrameAnimationCacheManagerStatus) {
  @param totalCount 帧动画资源的帧数
  @param completion block返回加载完成的帧动画资源
  */
-- (void)getAnimationsWithPrefixName:(NSString *)prefixName
-                         totalCount:(NSUInteger)totalCount
-                         completion:(completion)completion;
+- (void)loadFrameAnimationsWithPrefixName:(NSString *)prefixName
+                               totalCount:(NSUInteger)totalCount
+                               completion:(completion)completion;
+
+
 
 @end

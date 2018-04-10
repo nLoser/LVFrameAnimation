@@ -127,7 +127,7 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
     sqlite3_exec(db, "commit", 0, 0, 0);
 }
 
-- (NSDictionary<NSString *,NSNumber *> *)db_getCacheListResult {
+- (NSDictionary<NSString *,NSNumber *> *)loadCacheListResult {
     NSMutableDictionary *cacheListResultDict = [NSMutableDictionary dictionary];
     sqlite3_exec(db, "begin", 0, 0, 0);
     sqlite3_stmt *stmt = NULL;

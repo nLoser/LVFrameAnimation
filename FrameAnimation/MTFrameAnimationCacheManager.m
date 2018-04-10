@@ -45,7 +45,7 @@
         _cacheListResult = [NSMutableDictionary dictionary];
         _localCacheResult = [NSMutableDictionary dictionary];
         _tempKeyFrameImageSortSources = [NSMutableDictionary dictionary];
-        [_cacheListResult setValuesForKeysWithDictionary:[_dataBase db_getCacheListResult]];
+        [_cacheListResult setValuesForKeysWithDictionary:[_dataBase loadCacheListResult]];
         
         _status = kMTFrameAnimationCacheManagerStatusIdle;
     }
@@ -54,9 +54,9 @@
 
 #pragma mark - Public
 
-- (void)getAnimationsWithPrefixName:(NSString *)prefixName
-                         totalCount:(NSUInteger)totalCount
-                         completion:(completion)completion{
+- (void)loadFrameAnimationsWithPrefixName:(NSString *)prefixName
+                               totalCount:(NSUInteger)totalCount
+                               completion:(completion)completion {
     if (_status == kMTFrameAnimationCacheManagerStatusLoading) return;
     _status = kMTFrameAnimationCacheManagerStatusLoading;
     
@@ -91,7 +91,7 @@
                             if (!dbCacheResult) {
                                 [weakSelf.dataBase insertFrameSourcesWithPrefixName:prefixName sources:animationArr];
                                 [weakSelf.cacheListResult removeAllObjects];
-                                [weakSelf.cacheListResult setValuesForKeysWithDictionary:[weakSelf.dataBase db_getCacheListResult]];
+                                [weakSelf.cacheListResult setValuesForKeysWithDictionary:[weakSelf.dataBase loadCacheListResult]];
                             }
                             if (completion) {
                                 NSMutableArray *allKeys = [NSMutableArray arrayWithArray:weakSelf.tempKeyFrameImageSortSources.allKeys];
