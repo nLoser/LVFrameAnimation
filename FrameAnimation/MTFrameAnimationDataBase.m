@@ -95,8 +95,9 @@ static NSString *queryCacheTableByIndex = @"select * from %@_table WHERE id = '%
             }
         }
     }
-    
-    sqlite3_exec(db, "commit", 0, 0, 0);
+    if (img) {
+        sqlite3_exec(db, "commit", 0, 0, 0);
+    }
     return img;
 }
 
