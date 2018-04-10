@@ -65,15 +65,23 @@
     
     NSMutableArray<MTFrameAnimationImage *> *animationArr = [NSMutableArray array];
     @autoreleasepool {
-        if (dbCacheResult && !localCacheResult) {
-            NSArray<MTFrameAnimationImage *> *dbResources = [_dataBase loadFrameSourcesWithPrefixName:prefixName];
-            if (dbResources) {
-                [animationArr addObjectsFromArray:dbResources];
-                [dbResources enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
-                    [self cacheObject:obj forkey:[NSString stringWithFormat:@"%@_%d",prefixName, (int)idx+1]];
-                }];
+        if (dbCacheResult) {
+            if (localCacheResult) {
+                @autoreleasepool{
+                    for (int i = 1; i <= totalCount; i++) {
+                        [animationArr addObject:loadKeyFrameImageData(prefixName, i, YES, self)];
+                    }
+                }
+            }else {
+                NSArray<MTFrameAnimationImage *> *dbResources = [_dataBase loadFrameSourcesWithPrefixName:prefixName];
+                if (dbResources) {
+                    [animationArr addObjectsFromArray:dbResources];
+                    [dbResources enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
+                        [self cacheObject:obj forkey:[NSString stringWithFormat:@"%@_%d",prefixName, (int)idx+1]];
+                    }];
+                }
+                [_localCacheResult setValue:@(1) forKey:prefixName];
             }
-            [_localCacheResult setValue:@(1) forKey:prefixName];
             self.status = kMTFrameAnimationCacheManagerStatusIdle;
             completion(animationArr);
         }else {
@@ -139,7 +147,7 @@
 
 static MTFrameAnimationImage * loadKeyFrameImageData(NSString * prefixName, int index, BOOL dbCacheResult, MTFrameAnimationCacheManager * this) {
     MTFrameAnimationImage *data = [this cacheObjectForkey:[NSString stringWithFormat:@"%@_%d",prefixName, index]];
-    if (!data) {
+    if (data == nil || data == (id)kCFNull) {
         if (dbCacheResult) {
             data = [this->_dataBase loadFrameWithPrefixName:prefixName index:index];
             if (data) return data;
